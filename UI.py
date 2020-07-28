@@ -2,13 +2,12 @@ import random
 import cv2
 import numpy as np
 import math
+from data import *
 
 display = []
 
 ratio = 2/3
 padding = 0
-
-moretext = ""
 
 colors = [
 	(255, 0, 0),
@@ -19,9 +18,8 @@ colors = [
 	(0, 255, 255),
 	]
 
-def mapRender(players):
+def UIupdate(players, moretext):
 	global display
-	global moretext
 	global padding
 
 	image = cv2.imread("map.jpg")
@@ -76,27 +74,8 @@ def UIControl(players):
 	
 	cv2.namedWindow("image")
 
-	mapRender(players)
+	UIupdate(players, "\n")
 
 	return display, padding, ratio
 	
 	#cv2.waitKey(0)
-
-
-
-def UIupdate(players, pid, gameState):
-	global display
-	global moretext
-	moretext = "It's Player" + str(pid) + " turn!\n"
-	
-	if (gameState==0):
-		moretext += "+ " + str(players[pid].deltaArmies) + " tanks\n"
-	elif (gameState==10):
-		moretext += "Player" + str(pid) + " gains " + str(players[pid].deltaArmies) + " tanks!\n"
-		moretext += "+ " + str(players[pid].deltaArmies) + " tanks\n"
-	elif (gameState==2):
-		moretext += "+ " + str(players[pid].deltaArmies) + " tanks\n"
-	elif (gameState==3):
-		moretext += "Player" + str(pid) + " BATTLE PHASE\n"
-
-	mapRender(players)

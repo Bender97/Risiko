@@ -1,6 +1,7 @@
-from UI import UIupdate, mapRender
+from UI import UIupdate
 import cv2
 import math
+from data import *
 
 '''
 	gameState:
@@ -13,32 +14,27 @@ import math
 		repeat
 '''
 
-gameState = 0
-armiesCount =0
-pid = 0 	# Player id
+def assign_std_armies(players, pid):
+	players[pid].deltaArmies = math.floor(len(players[pid].empire)/3)
 
 def click_handle(event, x, y, flags, param):
-	global gameState
-	global pid
-	global armiesCount
 
-
-	players = param[0]
-	display = param[1]
-	padding = param[2]
-	ratio   = param[3]
-
-	x = int(x/ratio-padding)
-	y = int(y/ratio)
-	
 	if event == cv2.EVENT_LBUTTONUP:
-		print(x, ": ", y)
-		
-		if (gameState==10):
-			gameState = 2
+		global gameState
+		global pid
+		global armiesCount
 
+		moretext = ""
 
-		if gameState==0:
+		players = param[0]
+		display = param[1]
+		padding = param[2]
+		ratio   = param[3]
+
+		x = int(x/ratio-padding)
+		y = int(y/ratio)
+
+		if gameState==INIT_PHASE:
 			for player in players:
 				for state in player.empire:
 					if (x>=state.tl[0] and x<=state.br[0] and y>=state.tl[1] and y<=state.br[1]):
@@ -52,10 +48,14 @@ def click_handle(event, x, y, flags, param):
 								if (p.deltaArmies==0):
 									cont += 1
 								else:
+									moretext += "+ " + str(players[pid].deltaArmies) + " tanks\n"
 									break
 							if (cont == len(players)):
-								gameState = 10
 								pid = (pid + 1) % len(players)
+								assign_std_armies(players, pid)
+								moretext += "Player" + str(pid) + " gains " + str(players[pid].deltaArmies) + " tanks!\n"
+								print("Player", pid, " gains ", players[pid].deltaArmies)
+								gameState = ASK_FOR_CARDS_PHASE
 								x=-1
 								y=-1
 							else:
@@ -64,8 +64,18 @@ def click_handle(event, x, y, flags, param):
 									pid = (pid + 1) % len(players)
 									armiesCount = 0
 
-		if gameState==2:
-			print("gamestate 2")
+		#endif INIT_PHASE
+
+
+		if gameState==ASK_FOR_CARDS_PHASE:
+			print("ASK_FOR_CARDS_PHASE")			
+			# TO IMPLEMENT!!!
+			gameState = PLACE_ARMIES_PHASE
+		#endif ASK_FOR_CARDS_PHASE
+
+
+		if gameState==PLACE_ARMIES_PHASE:
+			print("PLACE_ARMIES_PHASE")
 
 			for player in players:
 				for state in player.empire:
@@ -78,18 +88,18 @@ def click_handle(event, x, y, flags, param):
 							if (players[pid].deltaArmies==0):
 									print("Player"+str(pid) + " ends it's turn!")
 									pid = (pid + 1) % len(players)
-									armiesCount = 0
-									gameState+=1
-									gameState=10
+									armiesCount = 0										
+									gameState = BATTLE_PHASE
+									assign_std_armies(players, pid)
+									moretext += "Player" + str(pid) + " gains " + str(players[pid].deltaArmies) + " tanks!\n"
+									print("Player", pid, " gains ", players[pid].deltaArmies)
+									gameState = ASK_FOR_CARDS_PHASE
+			
+			moretext += "+ " + str(players[pid].deltaArmies) + " tanks\n"	
+			#endif PLACE_ARMIES_PHASE
 
-		if gameState==10:
-			print("gamestate 10")
-
-			players[pid].deltaArmies = math.floor(len(players[pid].empire)/3)
-
-			print("Player", pid, " gains ", players[pid].deltaArmies)
-
-		UIupdate(players, pid, gameState)
+		moretext = "It's Player" + str(pid) + " turn!\n" + moretext
+		UIupdate(players, moretext)
 
 
 def PlayControl(players, display, padding, ratio):
@@ -99,7 +109,7 @@ def PlayControl(players, display, padding, ratio):
 	while(True):
 
 		while(players[pid].deltaArmies!=0):
-			UIupdate(players, pid, 0)
+			UIupdate(players, "")
 			
 			# WAIT FOR CLICK HANDLED CORRECTLY
 			param=  [players, display, padding, ratio]
