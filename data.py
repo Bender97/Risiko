@@ -8,4 +8,9 @@ PLACE_ARMIES_PHASE		= 3
 
 BATTLE_PHASE			= 4
 
-WAR_PHASE = 5
+WAR_PHASE				= 5
+
+MOVE_PHASE				= 6
+
+phase_button = [(50, 650), (300, 750)]
+phase_text = (100, 705)

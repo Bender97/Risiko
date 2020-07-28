@@ -79,7 +79,17 @@ def UIupdate(game):
 				cv2.rectangle(game.display, tuple(box[0]), tuple(box[1]), (0, 0, 0), 1)
 				cv2.putText(game.display, str(i), (box[0][0]+70, box[0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (0, 0, 0), 2, cv2.LINE_AA)
+	
 
+	elif game.state==BATTLE_PHASE:
+		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
+		cv2.putText(game.display, "end battle", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (255, 255, 255), 2, cv2.LINE_AA)
+
+	elif game.state==MOVE_PHASE:
+		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
+		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
 	game.display = cv2.resize(game.display, (int(game.display.shape[1]*game.ratio), int(game.display.shape[0]*game.ratio)))
 	cv2.imshow("image", game.display)

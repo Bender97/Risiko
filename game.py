@@ -15,6 +15,11 @@ from data import *
 		repeat
 '''
 
+def getPos(game, x, y):
+	if (x>=phase_button[0][0] and x<=phase_button[1][0] and y>=phase_button[0][1] and y<=phase_button[1][1]):
+		return 1
+	return -1
+
 def getState(game, x, y):
 	for player in game.players:
 		for state in player.empire:
@@ -23,20 +28,16 @@ def getState(game, x, y):
 	return -1, None
 
 def getAttackerControl(game, x, y):
-
 	if (x>=game.att_box[1][0][0] and x<=game.att_box[1][1][0]):
 		for i in range(1, 4):
 			if (y>=game.att_box[i][0][1] and y<=game.att_box[i][1][1]):
 				return i
-
 	return -1
 def getDefenderControl(game, x, y):
-
 	if (x>=game.def_box[1][0][0] and x<=game.def_box[1][1][0]):
 		for i in range(1, 4):
 			if (y>=game.def_box[i][0][1] and y<=game.def_box[i][1][1]):
 				return i
-
 	return -1
 
 def assign_std_armies(game):
@@ -99,12 +100,7 @@ def click_handle(event, x, y, flags, param):
 				game.armiesCount += 1
 
 				if (game.players[game.pid].deltaArmies==0):
-						#print("Player"+str(pid) + " ends it's turn!")
-						#pid = (pid + 1) % len(players)
-						game.armiesCount = 0										
-						#assign_std_armies(players, pid)
-						#moretext += "Player" + str(pid) + " gains " + str(players[pid].deltaArmies) + " tanks!\n"
-						#print("Player", pid, " gains ", players[pid].deltaArmies)
+						game.armiesCount = 0
 						x = -1
 						y = -1
 						game.state = BATTLE_PHASE
@@ -116,28 +112,35 @@ def click_handle(event, x, y, flags, param):
 
 		if game.state==BATTLE_PHASE:
 
-			#1 select my state
-			stateOwner, state = getState(game, x, y)
-			if (stateOwner==game.pid):			
-				if (game.attacker==None):
+			end_battle = getPos(game, x+game.padding, y)
+
+			if (end_battle>=0):
+				game.state = MOVE_PHASE
+				x = -1
+				y = -1
+			
+			else:
+				#1 select my state
+				stateOwner, state = getState(game, x, y)
+				if (stateOwner==game.pid):
 					if state.armyNum>=2:
 						game.attacker = state
 						print("Attacker is: " + game.attacker.name)
 					else:
 						print("ERROR: no sufficient armies")
 
-			elif (stateOwner!=-1):
-				if (game.attacker!=None and game.defender==None):
-					if (state.name in game.attacker.adjacency):
-						game.defender = state
-						print("Defender is: " + game.defender.name)
-						game.state = WAR_PHASE
-						x = -1
-						y = -1
-					else:
-						print("ERROR! selected defender not adjacent")
+				elif (stateOwner!=-1):
+					if (game.attacker!=None and game.defender==None):			## FIRST CHOOSE ATTACKER, THEN DEFENDER
+						if (state.name in game.attacker.adjacency):
+							game.defender = state
+							print("Defender is: " + game.defender.name)
+							game.state = WAR_PHASE
+							x = -1
+							y = -1
+						else:
+							print("ERROR! selected defender not adjacent")
 
-			game.moretext += "++ BATTLE PHASE"
+				game.moretext += "++ BATTLE PHASE"
 
 
 		if game.state == WAR_PHASE and x!=-1:
@@ -197,6 +200,22 @@ def click_handle(event, x, y, flags, param):
 				game.defArmy = -1
 				game.state = BATTLE_PHASE
 		
+		if game.state == MOVE_PHASE:
+
+			end_battle = getPos(game, x+game.padding, y)
+
+			if (end_battle>=0):
+				game.state = ASK_FOR_CARDS_PHASE
+				print("Player"+str(game.pid) + " ends it's turn!")
+				game.pid = (game.pid + 1) % len(game.players)
+				
+				game.armiesCount = 0										
+				assign_std_armies(game)
+				game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
+				print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
+			
+			else:
+				game.moretext += "++ MOVE PHASE"
 
 		game.moretext = "It's Player" + str(game.pid) + " turn!\n" + game.moretext
 		UIupdate(game)

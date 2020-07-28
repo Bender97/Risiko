@@ -25,6 +25,7 @@ class GameInfo:
 		self.defArmy = -1
 
 		self.state = BATTLE_PHASE
+		#self.state = INIT_PHASE
 		self.armiesCount = 0
 		self.pid = 0
 		self.display = None
