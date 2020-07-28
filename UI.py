@@ -4,11 +4,6 @@ import numpy as np
 import math
 from data import *
 
-display = []
-
-ratio = 2/3
-padding = 0
-
 colors = [
 	(255, 0, 0),
 	(0, 255, 0),
@@ -18,13 +13,11 @@ colors = [
 	(0, 255, 255),
 	]
 
-def UIupdate(players, moretext):
-	global display
-	global padding
+def UIupdate(game):
 
 	image = cv2.imread("map.jpg")
 
-	for player in players:
+	for player in game.players:
 		for s in player.empire:
 			cv2.rectangle(image, s.tl, s.br, colors[s.owner.id], 2)
 
@@ -42,40 +35,61 @@ def UIupdate(players, moretext):
 					cv2.rectangle(image, s.pointsTL16[c], s.pointsBR16[c], colors[s.owner.id], 2)
 
 
-	padding = int(0.3*image.shape[1])
+	game.padding = int(0.3*image.shape[1])
 
-	display = np.zeros((image.shape[0], image.shape[1]+padding, 3), dtype=np.uint8)
+	game.display = np.zeros((image.shape[0], image.shape[1]+game.padding, 3), dtype=np.uint8)
 
-	display[:, padding:] = image[:, :]
+	game.display[:, game.padding:] = image[:, :]
 
 	text_x = 50
 	text_y = 50
 
-	for i in range(len(players)):
-		text = "Player" + str(i) + ": " + str(players[i].deltaArmies)
-		cv2.putText(display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
+	for i in range(game.playersNum):
+		text = "Player" + str(i) + ": " + str(game.players[i].deltaArmies)
+		cv2.putText(game.display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
 	                   1, (255, 255, 255), 2, cv2.LINE_AA)
 		text_y += 50
 
-	if (moretext!=""):
-		for i, line in enumerate(moretext.split('\n')):
+	if (game.moretext!=""):
+		for i, line in enumerate(game.moretext.split('\n')):
 			if (line!=""):
-				cv2.putText(display, line, (50, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
+				cv2.putText(game.display, line, (50, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 				text_y+=50
-		moretext=""
+		game.moretext=""
 
 
-	display = cv2.resize(display, (int(display.shape[1]*ratio), int(display.shape[0]*ratio)))
-	cv2.imshow("image", display)
+	if (game.state==WAR_PHASE):
 
-def UIControl(players):
+		cv2.rectangle(game.display, tuple(game.att_box[0][0]), tuple(game.att_box[0][1]), (0, 0, 255), -1)
+		cv2.rectangle(game.display, tuple(game.def_box[0][0]), tuple(game.def_box[0][1]), (255, 0, 0), -1)
+
+		cv2.putText(game.display, "Attacker", (game.att_box[0][0][0]+15, game.att_box[0][0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (0, 0, 0), 2, cv2.LINE_AA)
+		cv2.putText(game.display, "Defender", (game.def_box[0][0][0]+15, game.def_box[0][0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (0, 0, 0), 2, cv2.LINE_AA)
+
+		for i, box in enumerate(game.att_box):
+			print(i, ": ", game.attacker.armyNum)
+			if (i>0 and i<game.attacker.armyNum-1):
+				cv2.rectangle(game.display, tuple(box[0]), tuple(box[1]), (0, 0, 0), 1)
+				cv2.putText(game.display, str(i), (box[0][0]+70, box[0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (0, 0, 0), 2, cv2.LINE_AA)
+		for i, box in enumerate(game.def_box):
+			if (i>0):
+				cv2.rectangle(game.display, tuple(box[0]), tuple(box[1]), (0, 0, 0), 1)
+				cv2.putText(game.display, str(i), (box[0][0]+70, box[0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (0, 0, 0), 2, cv2.LINE_AA)
+
+
+	game.display = cv2.resize(game.display, (int(game.display.shape[1]*game.ratio), int(game.display.shape[0]*game.ratio)))
+	cv2.imshow("image", game.display)
+
+def UIControl(game):
 	# RENDER img
 	
 	cv2.namedWindow("image")
 
-	UIupdate(players, "\n")
-
-	return display, padding, ratio
+	UIupdate(game)
 	
 	#cv2.waitKey(0)

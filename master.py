@@ -3,18 +3,41 @@ from player import player
 from map import adjacency, coord
 from UI import UIControl
 from game import PlayControl
+from data import *
+
 import random
 import cv2
 import numpy as np
 import math
 
-playersNum = 3
-statesNum = 42
+
+class GameInfo:
+	def __init__(self):
+		self.playersNum = 3
+		self.statesNum = 42
+		self.players = []
+		self.att_box = []
+		self.def_box = []
+		self.attacker = None
+		self.defender = None
+
+		self.attArmy = -1
+		self.defArmy = -1
+
+		self.state = BATTLE_PHASE
+		self.armiesCount = 0
+		self.pid = 0
+		self.display = None
+		self.padding = 0
+		self.ratio = 2/3
+		self.moretext = ""
+
+game = GameInfo()
 
 #GENERATE PLAYERS
-players = []
-for i in range(playersNum):
-	players.append(player(id=i, empire = []))
+
+for i in range(game.playersNum):
+	game.players.append(player(id=i, empire = []))
 
 #GENERATE STATES
 states = {}
@@ -23,6 +46,9 @@ for elem in adjacency:
 	s = state(name = elem)
 	s.armyNum = 1
 	s.owner = None
+
+	s.adjacency = adjacency[elem]
+
 	s.tl = coord[elem][0]
 	s.br = coord[elem][1]
 
@@ -76,19 +102,36 @@ for elem in adjacency:
 random.shuffle(states_name)
 
 idx = 0
-for i in range(statesNum):
-	pid = idx%playersNum
+for i in range(game.statesNum):
+	pid = idx%game.playersNum
 	state = states[states_name[i]]
-	players[pid].empire.append(state)
-	state.owner = players[pid]
+	game.players[pid].empire.append(state)
+	state.owner = game.players[pid]
 	idx+=1
 
-deltaArmies = 35 - 5*(len(players)-3)
+deltaArmies = 35 - 5*(game.playersNum-3)
 
-for player in players:
+for player in game.players:
 	player.deltaArmies =  1#deltaArmies - len(player.empire)
 
 
-display, padding, ratio = UIControl(players)
 
-PlayControl(players, display, padding, ratio)
+UIControl(game)
+
+###### ATTACKER AND DEFENDER CONTROL BOX
+
+pad2 = 6
+ht = 60
+
+game.att_box.append([[332, 252], [504, 514]])
+
+game.att_box.append([[332+pad2, 514-3*pad2-3*ht], [504-pad2, 514-3*pad2-2*ht]])
+game.att_box.append([[332+pad2, 514-2*pad2-2*ht], [504-pad2, 514-2*pad2-ht]])
+game.att_box.append([[332+pad2, 514-pad2-ht], [504-pad2, 514-pad2]])
+
+for box in game.att_box:
+	box[0][0]+=game.padding
+	box[1][0]+=game.padding
+	game.def_box.append([[box[0][0]+200, box[0][1]], [box[1][0]+200, box[1][1]]])
+
+PlayControl(game)
