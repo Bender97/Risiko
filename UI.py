@@ -70,13 +70,12 @@ def UIupdate(game):
 		                   1, (0, 0, 0), 2, cv2.LINE_AA)
 
 		for i, box in enumerate(game.att_box):
-			print(i, ": ", game.attacker.armyNum)
-			if (i>0 and i<game.attacker.armyNum-1):
+			if (i>0 and i<game.attacker.armyNum):
 				cv2.rectangle(game.display, tuple(box[0]), tuple(box[1]), (0, 0, 0), 1)
 				cv2.putText(game.display, str(i), (box[0][0]+70, box[0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (0, 0, 0), 2, cv2.LINE_AA)
 		for i, box in enumerate(game.def_box):
-			if (i>0):
+			if (i>0 and i<game.defender.armyNum+1):
 				cv2.rectangle(game.display, tuple(box[0]), tuple(box[1]), (0, 0, 0), 1)
 				cv2.putText(game.display, str(i), (box[0][0]+70, box[0][1]+40), cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (0, 0, 0), 2, cv2.LINE_AA)

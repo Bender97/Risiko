@@ -44,7 +44,7 @@ states = {}
 for elem in adjacency:
 
 	s = state(name = elem)
-	s.armyNum = 1
+	s.armyNum = 2
 	s.owner = None
 
 	s.adjacency = adjacency[elem]

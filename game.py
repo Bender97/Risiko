@@ -1,6 +1,7 @@
 from UI import UIupdate
 import cv2
 import math
+import random
 from data import *
 
 '''
@@ -131,13 +132,15 @@ def click_handle(event, x, y, flags, param):
 						game.defender = state
 						print("Defender is: " + game.defender.name)
 						game.state = WAR_PHASE
+						x = -1
+						y = -1
 					else:
 						print("ERROR! selected defender not adjacent")
 
 			game.moretext += "++ BATTLE PHASE"
 
 
-		if game.state == WAR_PHASE:
+		if game.state == WAR_PHASE and x!=-1:
 			# attacker selects it's army
 			if (game.attArmy<0):
 				game.attArmy = getAttackerControl(game, x+game.padding, y)
@@ -145,6 +148,41 @@ def click_handle(event, x, y, flags, param):
 			elif game.defArmy<0:
 				game.defArmy = getDefenderControl(game, x+game.padding, y)
 				print("defender chooses: ", game.defArmy)
+
+			if (game.defArmy>0):
+				#WAR!
+
+				attack = []
+				defense = []
+				for i in range(game.attArmy):
+					attack.append(random.randint(1, 6))
+				for i in range(game.defArmy):
+					defense.append(random.randint(1, 6))
+
+				attack.sort(reverse=True)
+				defense.sort(reverse=True)
+				print("attack:  " + str(attack))
+				print("defense: " + str(defense))
+				attackLost = 0
+				defenseLost = 0
+
+				for i in range(min(game.attArmy, game.defArmy)):
+					if attack[i]<=defense[i]:
+						attackLost+=1
+					else:
+						defenseLost+=1
+
+				print("attack  (", game.attacker.name, ") loses: ", attackLost)
+				print("defense (", game.defender.name, ") loses: ", defenseLost)
+
+				game.attacker.armyNum-=attackLost
+				game.defender.armyNum-=defenseLost
+
+				game.attacker = None
+				game.defender = None
+				game.attArmy = -1
+				game.defArmy = -1
+				game.state = BATTLE_PHASE
 		
 
 		game.moretext = "It's Player" + str(game.pid) + " turn!\n" + game.moretext
