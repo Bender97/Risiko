@@ -178,6 +178,19 @@ def click_handle(event, x, y, flags, param):
 				game.attacker.armyNum-=attackLost
 				game.defender.armyNum-=defenseLost
 
+				if (game.defender.armyNum==0):
+					print("attack  (", game.attacker.name, ") conquers: ", game.defender.name)
+					
+					game.players[game.defender.owner.id].empire.remove(game.defender)
+					game.players[game.pid].empire.append(game.defender)
+
+					game.defender.owner = game.players[game.pid]
+					game.attacker.armyNum -= (game.attArmy-attackLost)
+					game.defender.armyNum = (game.attArmy-attackLost)
+
+					
+
+
 				game.attacker = None
 				game.defender = None
 				game.attArmy = -1
