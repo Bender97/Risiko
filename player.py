@@ -8,3 +8,4 @@ class player:
 		self.target = target
 		self.bonusCards = bonusCards
 		self.deltaArmies = 0
+		self.alive = True

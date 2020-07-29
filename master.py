@@ -1,6 +1,6 @@
 from state import state
 from player import player
-from map import adjacency, coord
+from map import *
 from UI import UIControl
 from game import PlayControl
 from data import *

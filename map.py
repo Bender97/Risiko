@@ -88,3 +88,20 @@ coord = {
 	"Australia Occidentale": [(982, 654), (1072, 710)]
 }
 
+continents = {
+	"America del Nord": ["Alaska","Alberta","America Centrale","Stati Uniti Orientali","Groenlandia","Territori del Nord Ovest","Ontario","Quebec","Stati Uniti Occidentali"],
+	"America del Sud": ["Argentina","Brasile","Perù","Venezuela"],
+	"Europa": ["Gran Bretagna","Islanda","Europa Settentrionale","Scandinavia","Europa Meridionale","Ucraina","Europa Occidentale"],
+	"Africa": ["Congo","Africa Orientale","Egitto","Madagascar","Africa del Nord","Africa del Sud"],
+	"Asia": ["Afghanistan","Cina","India","Cita","Giappone","Kamchatka","Medio Oriente","Mongolia","Siam","Siberia","Urali","Jacuzia"],
+	"Oceania": ["Australia Orientale","Indonesia","Nuova Guinea","Australia Occidentale"]
+}
+
+continentsBonus = {
+	"America del Nord": 5,
+	"America del Sud": 2,
+	"Europa": 5,
+	"Africa": 3,
+	"Asia": 7,
+	"Oceania": 2
+}

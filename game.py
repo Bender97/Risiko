@@ -3,6 +3,7 @@ import cv2
 import math
 import random
 from data import *
+from map import *
 
 '''
 	game.state:
@@ -65,9 +66,32 @@ def getMoveControl(game, x, y):
 
 	return -1
 
+def updatePID(game):
+	flag = True
+	while(flag):
+		game.pid = (game.pid + 1) % len(game.players)
+		if (game.players[game.pid].alive):
+			flag = False
+
 
 def assign_std_armies(game):
 	game.players[game.pid].deltaArmies = math.floor(len(game.players[game.pid].empire)/3)
+
+	empire = []
+	for emp in game.players[game.pid].empire:
+		empire.append(emp.name)
+
+	#check for continents
+	for cont in continents:
+		flag = 1
+		for state in continents[cont]:
+			if (state not in empire):
+				flag = 0
+				break
+		if (flag==1):
+			print("Player" + str(game.pid) + " possess the continent " + cont + " --> gains +" + str(continentsBonus[cont]) + " armies")
+			game.players[game.pid].deltaArmies += continentsBonus[cont]
+
 
 
 def reset_after_battle(game):
@@ -109,7 +133,7 @@ def click_handle(event, x, y, flags, param):
 						game.moretext += "+ " + str(game.players[game.pid].deltaArmies) + " tanks\n"
 						break
 				if (cont == len(game.players)):
-					game.pid = (game.pid + 1) % len(game.players)
+					updatePID(game)
 					assign_std_armies(game)
 					if game.players[game.pid].deltaArmies==0:
 						print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
@@ -123,7 +147,7 @@ def click_handle(event, x, y, flags, param):
 				else:
 					if (game.armiesCount==3 or game.players[game.pid].deltaArmies==0):
 						print("Player"+str(game.pid) + " ends it's turn!")
-						game.pid = (game.pid + 1) % len(game.players)
+						updatePID(game)
 						game.armiesCount = 0
 
 		#endif INIT_PHASE
@@ -281,7 +305,7 @@ def click_handle(event, x, y, flags, param):
 			if (end_battle>=0):
 				game.state = ASK_FOR_CARDS_PHASE
 				print("Player"+str(game.pid) + " ends it's turn!")
-				game.pid = (game.pid + 1) % len(game.players)
+				updatePID(game)
 				
 				game.armiesCount = 0										
 				assign_std_armies(game)
@@ -327,7 +351,7 @@ def click_handle(event, x, y, flags, param):
 						reset_after_move(game)
 
 						print("Player"+str(game.pid) + " ends it's turn!")
-						game.pid = (game.pid + 1) % len(game.players)
+						updatePID(game)
 						
 						assign_std_armies(game)
 						game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
