@@ -21,6 +21,8 @@ class state:
 		### ADJACENCY
 		self.adjacency = []
 
+		self.selected = False
+
 
 	def attack(self, opponent, myArmyNum, oppArmyNum):
 		myArmy = []

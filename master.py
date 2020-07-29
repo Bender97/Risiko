@@ -98,8 +98,8 @@ for elem in adjacency:
 	for p in s.pointsTL16:
 		s.pointsBR16.append((p[0]+w3, p[1]+h3))
 
-
 	states[elem] = s
+
 
 #SELECT FIRST PLAYER
 # just for now: player 0 starts
@@ -117,8 +117,8 @@ for i in range(game.statesNum):
 	state = states[states_name[i]]
 	game.players[pid].empire.append(state)
 	state.owner = game.players[pid]
-	if (state.owner.id==0):
-		state.armyNum=10
+	#if (state.owner.id==0):
+	#	state.armyNum=10
 	idx+=1
 
 deltaArmies = 35 - 5*(game.playersNum-3)

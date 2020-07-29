@@ -19,11 +19,20 @@ def UIupdate(game):
 
 	for player in game.players:
 		for s in player.empire:
-			cv2.rectangle(image, s.tl, s.br, colors[s.owner.id], 2)
+
+			armyImg = cv2.resize(player.img, (s.width, s.height))
+
+			if (s.selected):
+				cv2.rectangle(image, s.tl, s.br, (255, 255, 255), 4)
+			else:
+				cv2.rectangle(image, s.tl, s.br, colors[s.owner.id], 1)
 
 			if (s.armyNum<=9):
 				for j in range(s.armyNum):
 					cv2.rectangle(image, s.pointsTL[j], s.pointsBR[j], colors[s.owner.id], 2)
+
+					image[s.pointsTL[j][1]:s.pointsTL[j][1]+s.height, s.pointsTL[j][0]:s.pointsTL[j][0]+s.width] = armyImg
+
 			else:				
 				qty = s.armyNum
 

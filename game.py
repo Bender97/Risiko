@@ -98,14 +98,17 @@ def reset_after_battle(game):
 	game.attArmy = -1
 	game.defArmy = -1
 def reset_after_war(game):
+	game.attacker.selected = game.defender.selected = False
 	game.attacker = None
 	game.defender = None
 def reset_after_conquer(game):
+	game.attacker.selected = game.defender.selected = False
 	game.attacker = None
 	game.defender = None
 	game.minMove = 0
 	game.maxMove = 0
 def reset_after_move(game):
+	game.fromState.selected = game.toState.selected = False
 	game.fromState = None
 	game.toState = None
 
@@ -196,7 +199,10 @@ def click_handle(event, x, y, flags, param):
 				stateOwner, state = getState(game, x, y)
 				if (stateOwner==game.pid):
 					if state.armyNum>=2:
+						if (game.attacker!=None):
+							game.attacker.selected = False
 						game.attacker = state
+						game.attacker.selected=True
 						print("Attacker is: " + game.attacker.name)
 					else:
 						print("ERROR: no sufficient armies")
@@ -204,7 +210,10 @@ def click_handle(event, x, y, flags, param):
 				elif (stateOwner!=-1):
 					if (game.attacker!=None and game.defender==None):			## FIRST CHOOSE ATTACKER, THEN DEFENDER
 						if (state.name in game.attacker.adjacency):
+							if (game.defender!=None):
+								game.defender.selected = False
 							game.defender = state
+							game.defender.selected=True
 							print("Defender is: " + game.defender.name)
 							game.state = WAR_PHASE
 							reset_after_battle(game)
@@ -326,14 +335,20 @@ def click_handle(event, x, y, flags, param):
 					if (stateOwner==game.pid):
 						if (game.fromState==None):
 							if state.armyNum>=2:
+								if (game.fromState!=None):
+									game.fromState.selected = False
 								game.fromState = state
+								game.fromState.selected = True
 								print("fromState is: " + game.fromState.name)
 							else:
 								print("ERROR: no sufficient armies")
 
 						elif (game.toState==None):
 							if (state.name in game.fromState.adjacency):
+								if (game.toState!=None):
+									game.toState.selected = False
 								game.toState = state
+								game.toState.selected = True
 								print("toState is: " + game.toState.name)
 								game.minMove = 0
 								game.maxMove = game.fromState.armyNum-1
