@@ -88,7 +88,7 @@ def UIupdate(game):
 		cv2.putText(game.display, "end battle", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
-	elif game.state==MOVE_PHASE or game.state==CONQUER_PHASE:
+	elif (game.state==MOVE_PHASE and game.toState!=None) or game.state==CONQUER_PHASE:
 		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
 		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
@@ -110,8 +110,6 @@ def UIupdate(game):
 		cont_angle = 0
 		delta = game.angle/2*3.141592/180
 		text_radius = game.radius*2/3
-
-		print("from UI: game.angle: ", game.angle, " numpts: ", numpts, " center: ", game.center, " padding: ", game.padding)
 
 		for i in range(numpts):
 			ca = cont_angle*3.141592/180

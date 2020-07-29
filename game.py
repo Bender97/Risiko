@@ -280,6 +280,8 @@ def click_handle(event, x, y, flags, param):
 							if (state.name in game.fromState.adjacency):
 								game.toState = state
 								print("toState is: " + game.toState.name)
+								game.minMove = 0
+								game.maxMove = game.fromState.armyNum-1
 							else:
 								print("ERROR! selected toState not adjacent")
 					elif stateOwner>=0:
