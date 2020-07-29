@@ -161,8 +161,6 @@ def click_handle(event, x, y, flags, param):
 
 
 		if game.state==PLACE_ARMIES_PHASE:
-			print("PLACE_ARMIES_PHASE")
-
 			if game.players[game.pid].deltaArmies==0:
 				print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
 				game.state = BATTLE_PHASE
@@ -261,8 +259,13 @@ def click_handle(event, x, y, flags, param):
 				if (game.defender.armyNum==0):
 					print("attack  (", game.attacker.name, ") conquers: ", game.defender.name)
 					
+					
 					game.players[game.defender.owner.id].empire.remove(game.defender)
 					game.players[game.pid].empire.append(game.defender)
+
+					if (len(game.players[game.defender.owner.id].empire)==0):
+						print("Player", game.defender.owner.id, " HAS LOST!")
+						game.players[game.defender.owner.id].alive = False
 
 					game.defender.owner = game.players[game.pid]
 					game.defender.armyNum = 0
@@ -273,13 +276,12 @@ def click_handle(event, x, y, flags, param):
 					game.maxMove = game.attacker.armyNum-1
 
 					game.state = CONQUER_PHASE
-			
+
 				else:
 					reset_after_war(game)
 					game.state = BATTLE_PHASE
 
 		if game.state == CONQUER_PHASE:
-			print("CONQUER_PHASE")
 
 			if (game.minMove==game.maxMove):
 				print("attacker moves  " + str(game.minMove) + " armies from " + game.attacker.name + " to " + game.defender.name)

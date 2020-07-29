@@ -104,8 +104,6 @@ def UIupdate(game):
 
 		numpts = game.maxMove-game.minMove+1
 
-		print("maxmove: ", game.maxMove, " minMove: ", game.minMove, " maxToMove: ", numpts)
-
 
 		game.angle = 360/numpts
 		cont_angle = 0
