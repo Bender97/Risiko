@@ -33,8 +33,8 @@ class GameInfo:
 		self.maxMove = 0
 
 
-		self.state = BATTLE_PHASE
-		#self.state = INIT_PHASE
+		#self.state = BATTLE_PHASE
+		self.state = INIT_PHASE
 		self.armiesCount = 0
 		self.pid = 0
 		self.display = None
@@ -54,7 +54,7 @@ states = {}
 for elem in adjacency:
 
 	s = state(name = elem)
-	s.armyNum = 2
+	s.armyNum = 1
 	s.owner = None
 
 	s.adjacency = adjacency[elem]

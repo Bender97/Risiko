@@ -69,6 +69,22 @@ def getMoveControl(game, x, y):
 def assign_std_armies(game):
 	game.players[game.pid].deltaArmies = math.floor(len(game.players[game.pid].empire)/3)
 
+
+def reset_after_battle(game):
+	game.attArmy = -1
+	game.defArmy = -1
+def reset_after_war(game):
+	game.attacker = None
+	game.defender = None
+def reset_after_conquer(game):
+	game.attacker = None
+	game.defender = None
+	game.minMove = 0
+	game.maxMove = 0
+def reset_after_move(game):
+	game.fromState = None
+	game.toState = None
+
 def click_handle(event, x, y, flags, param):
 	game = param
 	if event == cv2.EVENT_LBUTTONUP:
@@ -95,9 +111,13 @@ def click_handle(event, x, y, flags, param):
 				if (cont == len(game.players)):
 					game.pid = (game.pid + 1) % len(game.players)
 					assign_std_armies(game)
-					game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
-					print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
-					game.state = ASK_FOR_CARDS_PHASE
+					if game.players[game.pid].deltaArmies==0:
+						print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
+						game.state = BATTLE_PHASE
+					else:
+						game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
+						print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
+						game.state = ASK_FOR_CARDS_PHASE
 					x=-1
 					y=-1
 				else:
@@ -119,20 +139,24 @@ def click_handle(event, x, y, flags, param):
 		if game.state==PLACE_ARMIES_PHASE:
 			print("PLACE_ARMIES_PHASE")
 
-			stateOwner, state = getState(game, x, y)
-			if (stateOwner==game.pid):			
-				state.armyNum += 1
-				game.players[game.pid].deltaArmies -= 1
-				game.armiesCount += 1
+			if game.players[game.pid].deltaArmies==0:
+				print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
+				game.state = BATTLE_PHASE
+			else:
+				stateOwner, state = getState(game, x, y)
+				if (stateOwner==game.pid):
+					state.armyNum += 1
+					game.players[game.pid].deltaArmies -= 1
+					game.armiesCount += 1
 
-				if (game.players[game.pid].deltaArmies==0):
-						game.armiesCount = 0
-						x = -1
-						y = -1
-						game.state = BATTLE_PHASE
-			
-				else:
-					game.moretext += "+ " + str(game.players[game.pid].deltaArmies) + " tanks\n"	
+					if (game.players[game.pid].deltaArmies==0):
+							game.armiesCount = 0
+							x = -1
+							y = -1
+							game.state = BATTLE_PHASE
+				
+					else:
+						game.moretext += "+ " + str(game.players[game.pid].deltaArmies) + " tanks\n"	
 		#endif PLACE_ARMIES_PHASE
 
 
@@ -142,8 +166,8 @@ def click_handle(event, x, y, flags, param):
 
 			if (end_battle>=0):
 				game.state = MOVE_PHASE
-				x = -1
-				y = -1
+				reset_after_battle(game)
+				x = y = -1				
 			
 			else:
 				#1 select my state
@@ -161,9 +185,7 @@ def click_handle(event, x, y, flags, param):
 							game.defender = state
 							print("Defender is: " + game.defender.name)
 							game.state = WAR_PHASE
-							# I need these info to deal with move phase!
-							game.attArmy = -1
-							game.defArmy = -1
+							reset_after_battle(game)
 							x = -1
 							y = -1
 						else:
@@ -187,9 +209,11 @@ def click_handle(event, x, y, flags, param):
 				attack = []
 				defense = []
 				for i in range(game.attArmy):
-					attack.append(random.randint(1, 6))
+					#attack.append(random.randint(1, 6))
+					attack.append(6)
 				for i in range(game.defArmy):
-					defense.append(random.randint(1, 6))
+					#defense.append(random.randint(1, 6))
+					defense.append(1)
 
 				attack.sort(reverse=True)
 				defense.sort(reverse=True)
@@ -217,8 +241,6 @@ def click_handle(event, x, y, flags, param):
 					game.players[game.pid].empire.append(game.defender)
 
 					game.defender.owner = game.players[game.pid]
-					#game.attacker.armyNum -= game.attArmy
-					#game.defender.armyNum = game.attArmy
 					game.defender.armyNum = 0
 					x=-1
 					y=-1
@@ -228,26 +250,29 @@ def click_handle(event, x, y, flags, param):
 
 					game.state = CONQUER_PHASE
 			
-
 				else:
-					game.attacker = None
-					game.defender = None
+					reset_after_war(game)
 					game.state = BATTLE_PHASE
 
 		if game.state == CONQUER_PHASE:
 			print("CONQUER_PHASE")
-			armiesToMove = getMoveControl(game, x+game.padding, y)
-			
-			if (armiesToMove!=-1):
-				print("attacker moves  " + str(armiesToMove) + " armies from " + game.attacker.name + " to " + game.defender.name)
-				game.attacker.armyNum -= armiesToMove
-				game.defender.armyNum += armiesToMove
-				game.state = BATTLE_PHASE
 
-				game.attacker = None
-				game.defender = None
-				game.minMove = 0
-				game.maxMove = 0
+			if (game.minMove==game.maxMove):
+				print("attacker moves  " + str(game.minMove) + " armies from " + game.attacker.name + " to " + game.defender.name)
+				game.attacker.armyNum -= game.minMove
+				game.defender.armyNum += game.minMove
+				game.state = BATTLE_PHASE
+				reset_after_conquer(game)
+			else:
+				armiesToMove = getMoveControl(game, x+game.padding, y)
+				
+				if (armiesToMove!=-1):
+					print("attacker moves  " + str(armiesToMove) + " armies from " + game.attacker.name + " to " + game.defender.name)
+					game.attacker.armyNum -= armiesToMove
+					game.defender.armyNum += armiesToMove
+					game.state = BATTLE_PHASE
+
+					reset_after_conquer(game)
 		
 		if game.state == MOVE_PHASE:
 
@@ -260,8 +285,12 @@ def click_handle(event, x, y, flags, param):
 				
 				game.armiesCount = 0										
 				assign_std_armies(game)
-				game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
-				print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
+				if game.players[game.pid].deltaArmies==0:
+					print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
+					game.state = BATTLE_PHASE
+				else:
+					game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
+					print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
 			
 			else:
 				game.moretext += "++ MOVE PHASE\n"
@@ -290,21 +319,23 @@ def click_handle(event, x, y, flags, param):
 
 					armiesToMove = getMoveControl(game, x+game.padding, y)
 					
-					if (armiesToMove!=-1):
+					if (armiesToMove>0):
 						game.fromState.armyNum -= armiesToMove
 						game.toState.armyNum   += armiesToMove
 						game.state = ASK_FOR_CARDS_PHASE
 
-						game.fromState = None
-						game.toState = None
+						reset_after_move(game)
 
 						print("Player"+str(game.pid) + " ends it's turn!")
 						game.pid = (game.pid + 1) % len(game.players)
 						
-						game.armiesCount = 0
 						assign_std_armies(game)
 						game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
 						print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
+					elif (armiesToMove==0):
+						game.moretext += "Redo move phase\n"
+						game.fromState=None
+						game.toState=None
 
 
 		game.moretext = "It's Player" + str(game.pid) + " turn!\n" + game.moretext

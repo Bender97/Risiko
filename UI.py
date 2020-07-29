@@ -89,8 +89,9 @@ def UIupdate(game):
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
 	elif (game.state==MOVE_PHASE and game.toState!=None) or game.state==CONQUER_PHASE:
-		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
-		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
+		if (game.state!=CONQUER_PHASE):
+			cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
+			cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
 		x_center = int((game.height+game.padding)/2)
@@ -120,6 +121,11 @@ def UIupdate(game):
 			text_radius-=2
 
 			cont_angle+=game.angle
+
+	elif (game.state==MOVE_PHASE):
+		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
+		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
 
 
