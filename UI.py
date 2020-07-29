@@ -38,6 +38,8 @@ def UIupdate(game):
 	game.padding = int(0.3*image.shape[1])
 
 	game.display = np.zeros((image.shape[0], image.shape[1]+game.padding, 3), dtype=np.uint8)
+	game.width = game.display.shape[0]
+	game.height = game.display.shape[1]
 
 	game.display[:, game.padding:] = image[:, :]
 
@@ -86,30 +88,36 @@ def UIupdate(game):
 		cv2.putText(game.display, "end battle", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
-	elif game.state==MOVE_PHASE:
+	elif game.state==MOVE_PHASE or game.state==CONQUER_PHASE:
 		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
 		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
-		x_center = int((game.display.shape[1]+game.padding)/2)
-		y_center = int(game.display.shape[0]/2)
+		x_center = int((game.height+game.padding)/2)
+		y_center = int(game.width/2)
 
 		game.center=(x_center, y_center)
 		game.radius = 300
 
 		cv2.circle(game.display, game.center, game.radius, (0, 0, 255), -1)
 
-		numpts = 12
+		numpts = game.maxMove-game.minMove+1
+
+		print("maxmove: ", game.maxMove, " minMove: ", game.minMove, " maxToMove: ", numpts)
+
+
 		game.angle = 360/numpts
 		cont_angle = 0
 		delta = game.angle/2*3.141592/180
 		text_radius = game.radius*2/3
 
+		print("from UI: game.angle: ", game.angle, " numpts: ", numpts, " center: ", game.center, " padding: ", game.padding)
+
 		for i in range(numpts):
 			ca = cont_angle*3.141592/180
 			point = ( int(x_center+game.radius*math.cos(ca)), int(y_center+game.radius*math.sin(ca)))
 			cv2.line(game.display, game.center, point, (0, 0, 0))
-			cv2.putText(game.display, str(i), (int(x_center+text_radius*math.cos(ca+delta)), int(y_center+text_radius*math.sin(ca+delta))), cv2.FONT_HERSHEY_SIMPLEX,  
+			cv2.putText(game.display, str(i+game.minMove), (int(x_center+text_radius*math.cos(ca+delta)), int(y_center+text_radius*math.sin(ca+delta))), cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 			text_radius-=2
 

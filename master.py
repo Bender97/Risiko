@@ -29,6 +29,8 @@ class GameInfo:
 		self.center = 0
 		self.radius = 0
 		self.angle = 0
+		self.minMove = 0
+		self.maxMove = 0
 
 
 		self.state = BATTLE_PHASE
@@ -115,6 +117,8 @@ for i in range(game.statesNum):
 	state = states[states_name[i]]
 	game.players[pid].empire.append(state)
 	state.owner = game.players[pid]
+	if (state.owner.id==0):
+		state.armyNum=10
 	idx+=1
 
 deltaArmies = 35 - 5*(game.playersNum-3)
