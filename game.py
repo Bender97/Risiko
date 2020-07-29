@@ -40,6 +40,28 @@ def getDefenderControl(game, x, y):
 				return i
 	return -1
 
+def getMoveControl(game, x, y):
+	#print("last attack: ", game.attArmy)
+
+	d_x = x - game.center[0]
+	d_y = y - game.center[1]
+
+	dist = math.sqrt(d_x**2+d_y**2)
+	if (dist<=game.radius):
+		print("d_x: " + str(d_x) + " d_y: " + str(d_y))
+
+		angle = math.atan2(d_y, d_x) *180/3.141592
+		print("angle: ", angle)
+
+		if (angle>0):
+			print("result: ", math.floor(angle/game.angle))
+		else:
+			print("result: ", math.floor(12+angle/game.angle))
+
+
+	return -1, None, None
+
+
 def assign_std_armies(game):
 	game.players[game.pid].deltaArmies = math.floor(len(game.players[game.pid].empire)/3)
 
@@ -135,6 +157,9 @@ def click_handle(event, x, y, flags, param):
 							game.defender = state
 							print("Defender is: " + game.defender.name)
 							game.state = WAR_PHASE
+							# I need these info to deal with move phase!
+							game.attArmy = -1
+							game.defArmy = -1
 							x = -1
 							y = -1
 						else:
@@ -190,14 +215,10 @@ def click_handle(event, x, y, flags, param):
 					game.defender.owner = game.players[game.pid]
 					game.attacker.armyNum -= (game.attArmy-attackLost)
 					game.defender.armyNum = (game.attArmy-attackLost)
-
-					
-
+			
 
 				game.attacker = None
 				game.defender = None
-				game.attArmy = -1
-				game.defArmy = -1
 				game.state = BATTLE_PHASE
 		
 		if game.state == MOVE_PHASE:
@@ -216,6 +237,41 @@ def click_handle(event, x, y, flags, param):
 			
 			else:
 				game.moretext += "++ MOVE PHASE"
+				if (game.fromState==None or game.toState==None):
+					#1 select fromState
+					stateOwner, state = getState(game, x, y)
+					if (stateOwner==game.pid):
+						if (game.fromState==None):
+							if state.armyNum>=2:
+								game.fromState = state
+								print("fromState is: " + game.fromState.name)
+							else:
+								print("ERROR: no sufficient armies")
+
+						elif (game.toState==None):
+							if (state.name in game.fromState.adjacency):
+								game.toState = state
+								print("toState is: " + game.toState.name)
+							else:
+								print("ERROR! selected toState not adjacent")
+					elif stateOwner>=0:
+						print("not your state! keep off your hands")
+				else:
+
+					armiesToMove, fromState, toState = getMoveControl(game, x+game.padding, y)
+					
+					if (armiesToMove!=-1):
+						fromState.armyNum -= armiesToMove
+						toState.armyNum   += armiesToMove
+						game.state = ASK_FOR_CARDS_PHASE
+						print("Player"+str(game.pid) + " ends it's turn!")
+						game.pid = (game.pid + 1) % len(game.players)
+						
+						game.armiesCount = 0
+						assign_std_armies(game)
+						game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
+						print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
+
 
 		game.moretext = "It's Player" + str(game.pid) + " turn!\n" + game.moretext
 		UIupdate(game)

@@ -24,6 +24,13 @@ class GameInfo:
 		self.attArmy = -1
 		self.defArmy = -1
 
+		self.fromState = None
+		self.toState = None
+		self.center = 0
+		self.radius = 0
+		self.angle = 0
+
+
 		self.state = BATTLE_PHASE
 		#self.state = INIT_PHASE
 		self.armiesCount = 0

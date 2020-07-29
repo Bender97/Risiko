@@ -91,6 +91,32 @@ def UIupdate(game):
 		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
 		                   1, (255, 255, 255), 2, cv2.LINE_AA)
 
+		x_center = int((game.display.shape[1]+game.padding)/2)
+		y_center = int(game.display.shape[0]/2)
+
+		game.center=(x_center, y_center)
+		game.radius = 300
+
+		cv2.circle(game.display, game.center, game.radius, (0, 0, 255), -1)
+
+		numpts = 12
+		game.angle = 360/numpts
+		cont_angle = 0
+		delta = game.angle/2*3.141592/180
+		text_radius = game.radius*2/3
+
+		for i in range(numpts):
+			ca = cont_angle*3.141592/180
+			point = ( int(x_center+game.radius*math.cos(ca)), int(y_center+game.radius*math.sin(ca)))
+			cv2.line(game.display, game.center, point, (0, 0, 0))
+			cv2.putText(game.display, str(i), (int(x_center+text_radius*math.cos(ca+delta)), int(y_center+text_radius*math.sin(ca+delta))), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, (255, 255, 255), 2, cv2.LINE_AA)
+			text_radius-=2
+
+			cont_angle+=game.angle
+
+
+
 	game.display = cv2.resize(game.display, (int(game.display.shape[1]*game.ratio), int(game.display.shape[0]*game.ratio)))
 	cv2.imshow("image", game.display)
 
