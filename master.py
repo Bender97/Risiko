@@ -42,6 +42,8 @@ class GameInfo:
 		self.ratio = 2/3
 		self.moretext = ""
 
+		self.cards = []
+
 game = GameInfo()
 
 #GENERATE PLAYERS
@@ -100,11 +102,16 @@ for elem in adjacency:
 
 	states[elem] = s
 
+	## also build game.cards
+	game.cards.append(elem)
+
+
 
 #SELECT FIRST PLAYER
 # just for now: player 0 starts
 
-#DISTRIBUTE CARDs (territories)
+#DISTRIBUTE TERRITORIES
+
 states_name = []
 for elem in adjacency:
 	states_name.append(elem)
@@ -126,7 +133,8 @@ deltaArmies = 35 - 5*(game.playersNum-3)
 for player in game.players:
 	player.deltaArmies =  1#deltaArmies - len(player.empire)
 
-
+### SHUFFLE CARDS
+random.shuffle(game.cards)
 
 UIControl(game)
 

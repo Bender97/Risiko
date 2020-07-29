@@ -1,3 +1,5 @@
+from data import *
+
 adjacency = {
 	"Alaska": ["Kamchatka", "Territori del Nord Ovest", "Alberta"],
 	"Alberta": ["Alaska", "Territori del Nord Ovest", "Ontario", "Stati Uniti Occidentali"],
@@ -104,4 +106,49 @@ continentsBonus = {
 	"Africa": 3,
 	"Asia": 7,
 	"Oceania": 2
+}
+
+cardType = {
+	"Alaska": FANTE,
+	"Alberta": FANTE,
+	"America Centrale": CAVALLO,
+	"Stati Uniti Orientali": CANNONE,
+	"Groenlandia": CAVALLO,
+	"Territori del Nord Ovest": CANNONE,
+	"Ontario": CAVALLO,
+	"Quebec": CANNONE,
+	"Stati Uniti Occidentali": FANTE,
+	"Argentina": FANTE,
+	"Brasile": CANNONE,
+	"Perù": CAVALLO,
+	"Venezuela": CANNONE,
+	"Gran Bretagna": CAVALLO,
+	"Islanda": FANTE,
+	"Europa Settentrionale": CAVALLO,
+	"Scandinavia": CANNONE,
+	"Europa Meridionale": CAVALLO,
+	"Ucraina": CANNONE,
+	"Europa Occidentale": FANTE,
+	"Congo": CAVALLO,
+	"Africa Orientale": CANNONE,
+	"Egitto": FANTE,
+	"Madagascar": FANTE,
+	"Africa del Nord": FANTE,
+	"Africa del Sud": CANNONE,
+	"Afghanistan": FANTE,
+	"Cina": CAVALLO,
+	"India": FANTE,
+	"Cita": FANTE,
+	"Giappone": FANTE,
+	"Kamchatka": CAVALLO,
+	"Medio Oriente": CANNONE,
+	"Mongolia": CANNONE,
+	"Siam": CANNONE,
+	"Siberia": CANNONE,
+	"Urali": CAVALLO,
+	"Jacuzia": CAVALLO,
+	"Australia Orientale": FANTE,
+	"Indonesia": CAVALLO,
+	"Nuova Guinea": CAVALLO,
+	"Australia Occidentale": CANNONE
 }

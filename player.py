@@ -3,11 +3,11 @@ from map import adjacency
 import cv2
 
 class player:
-	def __init__(self, id, empire = [], target = [], bonusCards = []):
+	def __init__(self, id, empire = [], target = [], cards = []):
 		self.id = id
 		self.empire = empire
 		self.target = target
-		self.bonusCards = bonusCards
+		self.cards = cards
 		self.deltaArmies = 0
 		self.alive = True
 		self.img = cv2.imread(imgs[self.id])

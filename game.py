@@ -122,6 +122,13 @@ def click_handle(event, x, y, flags, param):
 		y = int(y/game.ratio)
 
 		if game.state==INIT_PHASE:
+			print("hey")
+			for s in coord:
+				print(s)
+				img = cv2.imread("imgs/" + s + ".jpg")
+				cv2.imshow("image", img)
+				cv2.waitKey(0)
+
 			stateOwner, state = getState(game, x, y)
 			if (stateOwner==game.pid):				
 				state.armyNum += 1

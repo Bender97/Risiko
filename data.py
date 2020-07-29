@@ -10,9 +10,14 @@ BATTLE_PHASE			= 4
 
 WAR_PHASE				= 5
 
-MOVE_PHASE				= 6
+CONQUER_PHASE			= 6
 
-CONQUER_PHASE			= 7
+MOVE_PHASE				= 7
 
 phase_button = [(50, 650), (300, 750)]
 phase_text = (100, 705)
+
+CANNONE = 0
+FANTE = 1
+CAVALLO = 2
+JOLLY = 3
