@@ -8,6 +8,7 @@ class player:
 		self.empire = empire
 		self.target = target
 		self.cards = cards
+		self.cards = [1, 2, 3]
 		self.deltaArmies = 0
 		self.alive = True
 		self.img = cv2.imread(imgs[self.id])

@@ -8,14 +8,16 @@ colors = [
 	(255, 0, 0),
 	(0, 255, 0),
 	(0, 0, 255),
-	(255, 255, 0),
-	(255, 0, 255),
+	(188, 84, 188),
 	(0, 255, 255),
+	(0, 0, 0),
 	]
 
 def UIupdate(game):
 
 	image = cv2.imread("map.jpg")
+	back = cv2.imread("imgs/back.png")
+	back = cv2.resize(back, (50, 70))
 
 	for player in game.players:
 		for s in player.empire:
@@ -44,9 +46,12 @@ def UIupdate(game):
 					cv2.rectangle(image, s.pointsTL16[c], s.pointsBR16[c], colors[s.owner.id], 2)
 
 
-	game.padding = int(0.3*image.shape[1])
+	game.padding = int(0.4*image.shape[1])
 
-	game.display = np.zeros((image.shape[0], image.shape[1]+game.padding, 3), dtype=np.uint8)
+	col = (73, 70, 70)  # dark grey
+
+	game.display = np.full((image.shape[0], image.shape[1]+game.padding, 3), col, dtype=np.uint8)
+
 	game.width = game.display.shape[0]
 	game.height = game.display.shape[1]
 
@@ -56,10 +61,29 @@ def UIupdate(game):
 	text_y = 50
 
 	for i in range(game.playersNum):
-		text = "Player" + str(i) + ": " + str(game.players[i].deltaArmies)
-		cv2.putText(game.display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
-	                   1, (255, 255, 255), 2, cv2.LINE_AA)
-		text_y += 50
+		if (game.pid!=i):
+			text = "Player" + str(i) + ": " + str(game.players[i].deltaArmies)
+			cv2.putText(game.display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   0.7, (255, 255, 255), 2, cv2.LINE_AA)
+			#text_y += 10
+			text_x = 170
+			
+			for j in range(len(game.players[i].cards)):
+				game.display[text_y:text_y+back.shape[0], text_x:text_x+back.shape[1]] = back
+				text_x += back.shape[1] + 10
+			
+			text_y += 80
+			text_x = 50
+
+		else:
+			text = "Player" + str(i) + ": " + str(game.players[i].deltaArmies)
+			cv2.putText(game.display, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX,  
+		                   1, colors[i], 4, cv2.LINE_AA)
+			text_x = 170
+			text_y+=10
+			game.display[text_y:text_y+back.shape[0], text_x:text_x+back.shape[1]] = back
+			text_y += 80
+			text_x = 50
 
 	if (game.moretext!=""):
 		for i, line in enumerate(game.moretext.split('\n')):
@@ -131,18 +155,22 @@ def UIupdate(game):
 
 	elif (game.state==MOVE_PHASE):
 		cv2.rectangle(game.display, phase_button[0], phase_button[1], (255, 255, 255), 1)
-		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX,  
-		                   1, (255, 255, 255), 2, cv2.LINE_AA)
+		cv2.putText(game.display, "end turn", phase_text, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
 
 
-	game.display = cv2.resize(game.display, (int(game.display.shape[1]*game.ratio), int(game.display.shape[0]*game.ratio)))
+	#game.display = cv2.resize(game.display, (int(game.display.shape[1]*game.ratio), int(game.display.shape[0]*game.ratio)))
+	game.ratio = ((game.size[0]-100)/game.display.shape[1], (game.size[1]-100)/game.display.shape[0])
+	game.display = cv2.resize(game.display, (game.size[0]-100, game.size[1]-100))
+
 	cv2.imshow("image", game.display)
 
 def UIControl(game):
 	# RENDER img
 	
 	cv2.namedWindow("image")
+	game.moretext += "++ INIT PHASE\n"
+	game.moretext = "It's Player" + str(game.pid) + " turn!\n" + game.moretext
 
 	UIupdate(game)
 	

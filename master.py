@@ -10,10 +10,12 @@ import cv2
 import numpy as np
 import math
 
+import pyautogui
+
 
 class GameInfo:
 	def __init__(self):
-		self.playersNum = 3
+		self.playersNum = 6
 		self.statesNum = 42
 		self.players = []
 		self.att_box = []
@@ -43,6 +45,9 @@ class GameInfo:
 		self.moretext = ""
 
 		self.cards = []
+
+		## SCREEN size
+		self.size = pyautogui.size()
 
 game = GameInfo()
 

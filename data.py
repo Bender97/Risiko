@@ -14,8 +14,8 @@ CONQUER_PHASE			= 6
 
 MOVE_PHASE				= 7
 
-phase_button = [(50, 650), (300, 750)]
-phase_text = (100, 705)
+phase_button = [(50, 720), (300, 830)]
+phase_text = (100, 785)
 
 CANNONE = 0
 FANTE = 1
