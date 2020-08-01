@@ -45,6 +45,7 @@ class GameInfo:
 		self.moretext = ""
 
 		self.cards = []
+		self.cardsImg = {}
 
 		## SCREEN size
 		self.size = pyautogui.size()
@@ -109,6 +110,8 @@ for elem in adjacency:
 
 	## also build game.cards
 	game.cards.append(elem)
+	img = cv2.imread('imgs/' + elem + '.jpg')
+	game.cardsImg[elem] = cv2.resize(img, (100, 140))
 
 
 

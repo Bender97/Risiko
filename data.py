@@ -14,6 +14,8 @@ CONQUER_PHASE			= 6
 
 MOVE_PHASE				= 7
 
+DRAW_CARD_PHASE			= 8
+
 phase_button = [(50, 720), (300, 830)]
 phase_text = (100, 785)
 

@@ -81,7 +81,9 @@ def UIupdate(game):
 		                   1, colors[i], 4, cv2.LINE_AA)
 			text_x = 170
 			text_y+=10
-			game.display[text_y:text_y+back.shape[0], text_x:text_x+back.shape[1]] = back
+			for j in range(len(game.players[i].cards)):
+				game.display[text_y:text_y+game.cardsImg[game.players[game.pid].cards[j]].shape[0], text_x:text_x+game.cardsImg[game.players[game.pid].cards[j]].shape[1]] = game.cardsImg[game.players[game.pid].cards[j]]
+				text_x += back.shape[1] + 10
 			text_y += 80
 			text_x = 50
 

@@ -115,9 +115,6 @@ def reset_after_move(game):
 def click_handle(event, x, y, flags, param):
 	game = param
 	if event == cv2.EVENT_LBUTTONUP:
-
-		print(x, y)
-
 		game.moretext = ""
 
 		x = int(x/game.ratio[0]-game.padding)
@@ -127,7 +124,7 @@ def click_handle(event, x, y, flags, param):
 			game.moretext += "++ INIT PHASE\n"
 
 			stateOwner, state = getState(game, x, y)
-			print(state.name)
+			
 			if (stateOwner==game.pid):				
 				state.armyNum += 1
 				game.players[game.pid].deltaArmies -= 1
@@ -273,6 +270,7 @@ def click_handle(event, x, y, flags, param):
 
 				if (game.defender.armyNum==0):
 					print("attack  (", game.attacker.name, ") conquers: ", game.defender.name)
+					game.players[game.pid].conquered = True
 					
 					
 					game.players[game.defender.owner.id].empire.remove(game.defender)
@@ -320,18 +318,21 @@ def click_handle(event, x, y, flags, param):
 			end_battle = getPos(game, x+game.padding, y)
 
 			if (end_battle>=0):
-				game.state = ASK_FOR_CARDS_PHASE
-				print("Player"+str(game.pid) + " ends it's turn!")
-				updatePID(game)
-				
-				game.armiesCount = 0										
-				assign_std_armies(game)
-				if game.players[game.pid].deltaArmies==0:
-					print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
-					game.state = BATTLE_PHASE
+				if (game.players[game.pid].conquered):
+					game.state = DRAW_CARD_PHASE
 				else:
-					#game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
-					print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
+					game.state = ASK_FOR_CARDS_PHASE
+					print("Player"+str(game.pid) + " ends it's turn!")
+					updatePID(game)
+					
+					game.armiesCount = 0										
+					assign_std_armies(game)
+					if game.players[game.pid].deltaArmies==0:
+						print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
+						game.state = BATTLE_PHASE
+					else:
+						#game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
+						print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
 			
 			else:
 				game.moretext += "++ MOVE PHASE\n"
@@ -383,6 +384,23 @@ def click_handle(event, x, y, flags, param):
 						#game.moretext += "Redo move phase\n"
 						game.fromState=None
 						game.toState=None
+
+		if game.state == DRAW_CARD_PHASE:
+			card = game.cards.pop(0)
+			print("THe card is: " + card)
+			game.players[game.pid].cards.append(card)
+			
+			print("Player"+str(game.pid) + " ends it's turn!")
+			updatePID(game)
+			
+			game.armiesCount = 0										
+			assign_std_armies(game)
+			if game.players[game.pid].deltaArmies==0:
+				print("PLAYER" + str(game.pid) + " HAS no armies to place!!")
+				game.state = BATTLE_PHASE
+			else:
+				#game.moretext += "Player" + str(game.pid) + " gains " + str(game.players[game.pid].deltaArmies) + " tanks!\n"
+				print("Player", game.pid, " gains ", game.players[game.pid].deltaArmies)
 
 
 		game.moretext = "It's Player" + str(game.pid) + " turn!\n" + game.moretext
